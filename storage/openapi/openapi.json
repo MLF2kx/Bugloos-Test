@@ -1,0 +1,726 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Bugloos API",
+        "description": "Bugloos API Documentation",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000"
+        }
+    ],
+    "paths": {
+        "/api/v1/auth/login": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "User Login via Username and Password",
+                "operationId": "auth_login",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "example": "admin"
+                                    },
+                                    "password": {
+                                        "example": "12345678"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SessionResource"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid username or password"
+                    },
+                    "403": {
+                        "description": "Disabled"
+                    },
+                    "500": {
+                        "description": "Server Error"
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/logout": {
+            "delete": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Log out and remove current session",
+                "operationId": "auth_logout",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Unauthorized Access"
+                    },
+                    "500": {
+                        "description": "Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/refresh": {
+            "put": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Refresh JWT Token",
+                "operationId": "auth_refresh",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SessionResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Unauthorized Access"
+                    },
+                    "500": {
+                        "description": "Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/revoke": {
+            "delete": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Log out and remove another session of current user",
+                "operationId": "auth_revoke",
+                "parameters": [
+                    {
+                        "name": "session_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "724b650c-da5e-4301-886c-3a508a68f3a1"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "500": {
+                        "description": "Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/sessions": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Get All JWT Tokens of user",
+                "operationId": "auth_sessions",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/SessionResource"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Unauthorized Access"
+                    },
+                    "500": {
+                        "description": "Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/category": {
+            "get": {
+                "tags": [
+                    "category"
+                ],
+                "summary": "Get list of Categories",
+                "operationId": "category_get",
+                "parameters": [
+                    {
+                        "name": "parent_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CategoryResource"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Unauthorized Access"
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/category/properties/{id}": {
+            "get": {
+                "tags": [
+                    "category"
+                ],
+                "summary": "Get list of Category Product Properties",
+                "operationId": "category_properties",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/PropertyResource"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Unauthorized Access"
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/product/{id}": {
+            "get": {
+                "tags": [
+                    "product"
+                ],
+                "summary": "Get information of a product",
+                "operationId": "product_get",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    },
+                    {
+                        "name": "columns",
+                        "in": "query",
+                        "description": "id|category|title|description|price|quantity|values",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "id|category|title|description|price|quantity|values"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Unauthorized Access"
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/product/list": {
+            "get": {
+                "tags": [
+                    "product"
+                ],
+                "summary": "Get list of products",
+                "operationId": "product_list",
+                "parameters": [
+                    {
+                        "name": "title",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "Bugloos"
+                    },
+                    {
+                        "name": "columns",
+                        "in": "query",
+                        "description": "id|category|title|description|price|quantity|values",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "id|category|title|description|price|quantity|values"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 10
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "count": {
+                                            "type": "integer",
+                                            "example": 10
+                                        },
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ProductResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Unauthorized Access"
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get list of Users",
+                "operationId": "user_get",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "Bugloos"
+                    },
+                    {
+                        "name": "username",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "admin"
+                    },
+                    {
+                        "name": "is_active",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 10
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "count": {
+                                            "type": "integer",
+                                            "example": 10
+                                        },
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/UserResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Unauthorized Access"
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "CategoryResource": {
+                "properties": {
+                    "id": {
+                        "type": "int",
+                        "example": 1
+                    },
+                    "parent": {
+                        "type": "object",
+                        "example": "[]"
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Bugloos"
+                    }
+                },
+                "type": "object"
+            },
+            "OptionResource": {
+                "properties": {
+                    "id": {
+                        "type": "int",
+                        "example": 1
+                    },
+                    "value": {
+                        "type": "string",
+                        "example": "Bugloos"
+                    },
+                    "is_new": {
+                        "type": "boolean",
+                        "example": false
+                    }
+                },
+                "type": "object"
+            },
+            "ProductResource": {
+                "properties": {
+                    "id": {
+                        "type": "int",
+                        "example": 1
+                    },
+                    "category": {
+                        "$ref": "#/components/schemas/CategoryResource"
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Bugloos"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Bugloos API Documentation"
+                    },
+                    "price": {
+                        "type": "integer",
+                        "example": 1000
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "example": 25
+                    },
+                    "values": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ValueResource"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "PropertyResource": {
+                "properties": {
+                    "id": {
+                        "type": "int",
+                        "example": 1
+                    },
+                    "category": {
+                        "$ref": "#/components/schemas/CategoryResource"
+                    },
+                    "type": {
+                        "$ref": "#/components/schemas/TypeResource"
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Bugloos"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Bugloos API Documentation"
+                    },
+                    "weight": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "is_required": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "is_expandable": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "is_filter": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "is_sortable": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "options": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OptionResource"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "SessionResource": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "724b650c-da5e-4301-886c-3a508a68f3a1"
+                    },
+                    "token": {
+                        "type": "string",
+                        "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vdGEtYjJiLm5jaXMuaXIvYXV0aC9sb2dpbiIsImF1ZCI6Imh0dHA6Ly90YS1iMmIubmNpcy5pciIsImlhdCI6MTYzNTE0Mzk0NC43MzMyNywibmJmIjoxNjM1MTQzOTQ0LjczMzI3LCJleHAiOjE2MzUyMzAzNDQuNzMzMjcsImp0aSI6IjhhMzY4ZjQyLWU0M2UtNGQzMS05MjdmLTY5MTg4MjU3YmIyOCIsInN1YiI6IjE2N2Y2ODUxLTA5MGUtNDk3My05OTQzLTNhMjg0OTgwOThlOSIsIm1vYmlsZSI6IjA5MTIxOTUzNDE5Iiwicm9sZXMiOlsiQ1VTVE9NRVIiLCJCMkJfU0VMTEVSIl19.olYoPScPjPHQJrd2pqZOgu2-vozfynsUiP9RGeLwTkk"
+                    },
+                    "refresh": {
+                        "type": "string",
+                        "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vdGEtYjJiLm5jaXMuaXIvYXV0aC9sb2dpbiIsImF1ZCI6Imh0dHA6Ly90YS1iMmIubmNpcy5pciIsImlhdCI6MTYzNTE0Mzk0NC43NTcyODYsIm5iZiI6MTYzNTE0Mzk0NC43NTcyODYsImV4cCI6MTY0MDMyNzk0NC43NTcyODYsImp0aSI6IjhhMzY4ZjQyLWU0M2UtNGQzMS05MjdmLTY5MTg4MjU3YmIyOCIsInN1YiI6IjE2N2Y2ODUxLTA5MGUtNDk3My05OTQzLTNhMjg0OTgwOThlOSIsIm1vYmlsZSI6IjA5MTIxOTUzNDE5Iiwicm9sZXMiOlsiQ1VTVE9NRVIiLCJCMkJfU0VMTEVSIl19.sBhhaqJLqWBp5xjZGJJI8uEiU8hCy6Nnb2dnIeGDBBc"
+                    },
+                    "ip": {
+                        "type": "string",
+                        "example": "127.0.0.1"
+                    },
+                    "device": {
+                        "type": "string",
+                        "example": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/UserResource"
+                    }
+                },
+                "type": "object"
+            },
+            "TypeResource": {
+                "properties": {
+                    "id": {
+                        "type": "int",
+                        "example": 1
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Bugloos"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Bugloos API Documentation"
+                    }
+                },
+                "type": "object"
+            },
+            "UserResource": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "724b650c-da5e-4301-886c-3a508a68f3a1"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Administrator"
+                    },
+                    "username": {
+                        "type": "string",
+                        "example": "admin"
+                    },
+                    "register": {
+                        "type": "string",
+                        "example": "1400/08/03 | 15:20"
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "ValueResource": {
+                "properties": {
+                    "id": {
+                        "type": "int",
+                        "example": 1
+                    },
+                    "property": {
+                        "$ref": "#/components/schemas/PropertyResource"
+                    },
+                    "option": {
+                        "$ref": "#/components/schemas/OptionResource"
+                    },
+                    "value": {
+                        "type": "string",
+                        "example": "Bugloos"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "auth": {
+                "type": "http",
+                "description": "Use auth/login to get the JWT token",
+                "name": "Authorization",
+                "in": "header",
+                "bearerFormat": "jwt",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "security": [
+        []
+    ]
+}
